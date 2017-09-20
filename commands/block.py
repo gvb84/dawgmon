@@ -1,11 +1,12 @@
 from . import *
 
-class ListBlockDevicesCommand(Command):
+class ListBlockDevicesCommand(ShellCommand):
 	name = "list_blkdev"
-	shell = False
-	command = "/bin/lsblk -la"
+	command = "lsblk -la"
 	desc = "analyze changes in available block devices"
+	supported = "linux"
 
+	@staticmethod
 	def parse(output):
 		lines = output.splitlines()
 		if len(lines) == 0:
@@ -25,6 +26,7 @@ class ListBlockDevicesCommand(Command):
 			ret[e[0]] = (maj_min, int(rm), size, int(ro), blktype, mount)	
 		return ret
 
+	@staticmethod
 	def compare(prev, cur):
 		anomalies = []
 		blocks = merge_keys_to_list(prev, cur)

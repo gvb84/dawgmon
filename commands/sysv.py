@@ -1,11 +1,12 @@
 from . import *
 
-class ListSystemVInitJobsCommand(Command):
+class ListSystemVInitJobsCommand(ShellCommand):
 	name = "list_sysvinit_jobs"
-	shell = False
-	command = "/usr/sbin/service --status-all"
+	command = "service --status-all"
 	desc = "analyze changes in available System V init jobs"
+	supported = "linux"
 
+	@staticmethod
 	def parse(output):
 		res = {}
 		lines = output.splitlines()
@@ -14,6 +15,7 @@ class ListSystemVInitJobsCommand(Command):
 			res[parts[3]] = parts[1]
 		return res
 
+	@staticmethod
 	def compare(prev, cur):
 		anomalies = []
 		services = merge_keys_to_list(prev, cur)

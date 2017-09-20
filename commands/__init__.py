@@ -10,17 +10,7 @@ def C(s):
 	return (CHANGE, s, datetime.utcnow())
 
 from utils import merge_keys_to_list
-
-# base Command class
-class Command:
-	desc = "<unknown description>"
-	@classmethod
-	def parse(cls, output):
-		raise Exception("not implemented for %s" % str(cls))
-	@classmethod
-	def compare(cls, prev, cur):
-		raise Exception("not implemented for %s" % str(cls))
-
+from command import *
 
 from .block import *
 from .debian import *
@@ -29,6 +19,7 @@ from .files import *
 from .ipc import *
 from .mount import *
 from .network import *
+from .netstat import *
 from .processes import *
 from .systemd import *
 from .sysv import *
@@ -38,6 +29,8 @@ from .users import *
 from .version import *
 # commands will be executed in the order they appear in this list
 COMMANDS = [
+	netstat.ListeningTCPUDPPortsCommand,
+	block.ListBlockDevicesCommand,
 	files.CheckBootDirectoryCommand,
 	files.CheckEtcDirectoryCommand,
 	files.CheckForPipesCommand,
@@ -63,8 +56,7 @@ COMMANDS = [
 	version.KernelVersionCommand,
 	version.LSBVersionCommand,
 	network.ListListeningTCPUDPPortsCommand,
-	network.ListNetworkInterfacesCommand,
-	block.ListBlockDevicesCommand
+	network.ListNetworkInterfacesCommand
 ]
 
 # built up mapping from command names to command classes

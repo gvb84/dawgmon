@@ -36,12 +36,13 @@ def status_string(c, desc=False):
 	}
 	return convert_code_to_string(statuses, c, desc)
 
-class ListInstalledPackagesCommand(Command):
+class ListInstalledPackagesCommand(ShellCommand):
 	name = "list_packages"
-	shell = False
-	command = "/usr/bin/dpkg --list"
+	command = "dpkg --list"
 	desc = "analyze changes in installed Debian packages"
+	supported = "linux"
 
+	@staticmethod
 	def parse(output):
 		res = {}
 		lines = output.splitlines()
@@ -59,6 +60,7 @@ class ListInstalledPackagesCommand(Command):
 			res[parts[1]] = (version, status)
 		return res
 
+	@staticmethod
 	def compare(prev, cur):
 		anomalies = []
 		packages = merge_keys_to_list(prev, cur)

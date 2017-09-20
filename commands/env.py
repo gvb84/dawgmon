@@ -1,11 +1,11 @@
 from . import *
 
-class EnvironmentVariablesCommand(Command):
+class EnvironmentVariablesCommand(ShellCommand):
 	name = "env"
-	shell = False
 	command = "env"
 	desc = "monitor changes in environment variables"
 
+	@staticmethod
 	def parse(output):
 		lines = output.splitlines()
 		if len(lines) == 0:
@@ -18,6 +18,7 @@ class EnvironmentVariablesCommand(Command):
 			ret[name] = value
 		return ret
 
+	@staticmethod
 	def compare(prev, cur):
 		anomalies = []
 		envvars = merge_keys_to_list(prev, cur)

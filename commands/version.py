@@ -1,11 +1,11 @@
 from . import *
 
-class KernelVersionCommand(Command):
+class KernelVersionCommand(ShellCommand):
 	name = "kernel_version"
-	shell = True
-	command = "/bin/sh -c 'printf \"`uname -a`\\n`uname -v`\"'"
+	command = "sh -c 'printf \"`uname -a`\\n`uname -v`\"'"
 	desc = "analyze changes in kernel version"
 
+	@staticmethod
 	def parse(output):
 		lines = output.splitlines()
 		if len(lines) != 2:
@@ -15,6 +15,7 @@ class KernelVersionCommand(Command):
 		kernel_name, hostname, kernel_release = line
 		return (kernel_name, hostname, kernel_release, kernel_version)
 
+	@staticmethod
 	def compare(prev, cur):
 		ret = []
 		if not prev:
@@ -52,12 +53,13 @@ class KernelVersionCommand(Command):
 			ret.append(W("kernel seems to have changed from %s to %s" % (" ".join(prev), " ".join(cur))))
 		return ret
 
-class LSBVersionCommand(Command):
+class LSBVersionCommand(ShellCommand):
 	name = "lsb_version"
-	shell = False
-	command = "/usr/bin/lsb_release -idcr"
+	command = "lsb_release -idcr"
 	desc = "analyze changes in Linux Standard Base release settings"
+	supported = "linux"
 
+	@staticmethod
 	def parse(output):
 		lines = output.splitlines()
 		if len(lines) != 4:
@@ -70,6 +72,7 @@ class LSBVersionCommand(Command):
 			ret[prop] = val
 		return ret
 
+	@staticmethod
 	def compare(prev, cur):
 		anomalies = []
 		entries = merge_keys_to_list(prev, cur)

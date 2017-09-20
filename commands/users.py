@@ -15,12 +15,12 @@ def anonymize_pw(pw):
 		return pw
 	return "<anonymized>"
 
-class CheckGroupsCommand(Command):
+class CheckGroupsCommand(ShellCommand):
 	name = "check_groups"
-	shell = False
 	command = "cat /etc/group"
 	desc = "analyze UNIX group changes"
 
+	@staticmethod
 	def parse(data):
 		data = data.splitlines()
 		res = {}
@@ -33,6 +33,7 @@ class CheckGroupsCommand(Command):
 			res[parts[0]] = (int(parts[2]), users, pwhash_entry)
 		return res
 
+	@staticmethod
 	def compare(prev, cur):
 		anomalies = []
 		groups = merge_keys_to_list(prev, cur)
@@ -74,12 +75,12 @@ class CheckGroupsCommand(Command):
 		anomalies.append(W("%i password%s for groups not in /etc/gshadow but /etc/group [%s]" % (l, "s" if l != 1 else "", ",".join(in_group))))
 		return anomalies
 
-class CheckUsersCommand(Command):
+class CheckUsersCommand(ShellCommand):
 	name = "check_users"
-	shell = False
 	command = "cat /etc/passwd"
 	desc = "analyze UNIX user changes"
 
+	@staticmethod
 	def parse(data):
 		data = data.splitlines()
 		res = {}
@@ -92,6 +93,7 @@ class CheckUsersCommand(Command):
 			res[login] = (uid, gid, homedir, shell, pwhash_entry)
 		return res
 
+	@staticmethod
 	def compare(prev, cur):
 		anomalies = []
 		users = merge_keys_to_list(prev, cur)

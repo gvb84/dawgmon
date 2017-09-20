@@ -3,12 +3,12 @@ from datetime import datetime
 
 PARSE_STR = "%Y-%m-%d %H:%M:%S"
 
-class UptimeCommand(Command):
+class UptimeCommand(ShellCommand):
 	name = "uptime"
-	shell = False
 	command = "uptime -s"
 	desc = "show uptime and check if reboot happened"
 
+	@staticmethod
 	def parse(output):
 		if not output:
 			return None 
@@ -17,6 +17,7 @@ class UptimeCommand(Command):
 		except ValueError:
 			return None
 
+	@staticmethod
 	def compare(prev, cur):
 		scur = cur.strftime(PARSE_STR)
 		if not prev:

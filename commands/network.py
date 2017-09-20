@@ -1,11 +1,12 @@
 from . import *
 
-class ListListeningTCPUDPPortsCommand(Command):
-	name = "list_tcpudp_ports"
-	shell = False
+class ListListeningTCPUDPPortsCommand(ShellCommand):
+	name = "xlist_tcpudp_ports"
 	command = "netstat --tcp --udp -ln"
 	desc = "list changes in listening TCP/UDP ports for both IPv4/IPv6"
+	supported = "linux"
 
+	@staticmethod
 	def parse(output):
 		res = {}
 		output = output.splitlines()[2:]
@@ -19,6 +20,7 @@ class ListListeningTCPUDPPortsCommand(Command):
 			res[port].sort()
 		return res
 
+	@staticmethod
 	def compare(prev, cur):
 		anomalies = []
 		ports = merge_keys_to_list(prev, cur)
@@ -36,12 +38,13 @@ class ListListeningTCPUDPPortsCommand(Command):
 			anomalies.append(D("port %i %s is listening" % (port, cur_types)))
 		return anomalies
 
-class ListNetworkInterfacesCommand(Command):
+class ListNetworkInterfacesCommand(ShellCommand):
 	name = "list_ifaces"
-	shell = False
-	command = "/bin/ip addr"
+	command = "ip addr"
 	desc = "analyze changes in network interfaces"	
+	supported = "linux"
 
+	@staticmethod
 	def parse(output):
 		res = {}
 		linecount = 0
@@ -84,6 +87,7 @@ class ListNetworkInterfacesCommand(Command):
 			res[iface] = (state, set(addrs))
 		return res
 
+	@staticmethod
 	def compare(prev, cur):
 		anomalies = []
 		ifaces = merge_keys_to_list(prev, cur)

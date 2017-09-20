@@ -1,11 +1,11 @@
 from . import *
 
-class CheckProcessessCommand(Command):
+class CheckProcessessCommand(ShellCommand):
 	name = "list_processes"
-	shell = False
 	command = "ps aux"
 	desc = "monitors changes in the running processes (mostly for debugging)"
 
+	@staticmethod
 	def parse(output):
 		res = {}
 		lines = output.splitlines()
@@ -22,6 +22,7 @@ class CheckProcessessCommand(Command):
 			res[pid] = (cmd, user, start)
 		return res
 
+	@staticmethod
 	def compare(prev, cur):
 		anomalies = []
 		processes = merge_keys_to_list(prev, cur)

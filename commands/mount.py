@@ -9,12 +9,12 @@ def change_attr_list_to_dict(attrs):
 		ret[name] = val
 	return ret
 
-class MountpointsCommand(Command):
+class MountpointsCommand(ShellCommand):
 	name = "list_mount"
-	shell = False
-	command = "/bin/mount"
+	command = "mount"
 	desc = "analyze changes in file system mounts"
 
+	@staticmethod
 	def parse(output):
 		lines = output.splitlines()
 		if len(lines) == 0:
@@ -34,6 +34,7 @@ class MountpointsCommand(Command):
 			ret[point] = (device, mtype, attrs)
 		return ret
 
+	@staticmethod
 	def compare(prev, cur):
 		anomalies = []
 		mounts = merge_keys_to_list(prev, cur)

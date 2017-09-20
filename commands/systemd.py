@@ -1,6 +1,6 @@
 from . import *
 
-SYSTEMCTL_BIN = "/bin/systemctl"
+SYSTEMCTL_BIN = "systemctl"
 
 def remove_footer_from_table(output):
 	# remove the empty lines and footers at the end
@@ -45,12 +45,13 @@ def parse_systemd_output_table(output):
 		res.append(e)
 	return res
 
-class ListSystemDSocketsCommand(Command):
+class ListSystemDSocketsCommand(ShellCommand):
 	name = "systemd_sockets"
-	shell = False
 	command = "%s list-sockets --full" % (SYSTEMCTL_BIN)
 	desc = "list systemd sockets"
+	supported = "linux"
 
+	@staticmethod
 	def parse(output):
 		res = {}
 		entries = parse_systemd_output_table(output)
@@ -58,6 +59,7 @@ class ListSystemDSocketsCommand(Command):
 			res[e["listen"]] = (e["unit"], e["activates"])
 		return res
 
+	@staticmethod
 	def compare(prev, cur):
 		anomalies = []
 		sockets = merge_keys_to_list(prev, cur)
@@ -74,12 +76,13 @@ class ListSystemDSocketsCommand(Command):
 				anomalies.append(C("systemd socket %s used to activate %s but now activates %s" % (listen, p[1], c[1])))
 		return anomalies
 
-class ListSystemDTimersCommand(Command):
+class ListSystemDTimersCommand(ShellCommand):
 	name = "systemd_timers"
-	shell = False
 	command = "%s list-timers --all --full" % (SYSTEMCTL_BIN)
 	desc = "list systemd timers"
+	supported = "linux"
 
+	@staticmethod
 	def parse(output):
 		res = {}
 		entries = parse_systemd_output_table(output)
@@ -87,6 +90,7 @@ class ListSystemDTimersCommand(Command):
 			res[e["unit"]] = (e["activates"], e["last"], e["next"], e["left"], e["passed"])
 		return res
 
+	@staticmethod
 	def compare(prev, cur):
 		anomalies = []
 		units = merge_keys_to_list(prev, cur)
@@ -102,12 +106,13 @@ class ListSystemDTimersCommand(Command):
 			anomalies.append(D("systemd timer %s ran at %s (%s) and will run again at %s (%s)" % (unit, c[1], c[3], c[2], c[4])))
 		return anomalies
 
-class ListSystemDUnitsCommand(Command):
+class ListSystemDUnitsCommand(ShellCommand):
 	name = "systemd_units"
-	shell = False
 	command = "%s --all --full" % (SYSTEMCTL_BIN)
 	desc = "list all available systemd units"
+	supported = "linux"
 
+	@staticmethod
 	def parse(output):
 		res = {}
 		entries = parse_systemd_output_table(output)
@@ -115,6 +120,7 @@ class ListSystemDUnitsCommand(Command):
 			res[e["unit"]] = (e["active"], e["load"], e["sub"], e["description"])
 		return res
 
+	@staticmethod
 	def compare(prev, cur):
 		anomalies = []
 		units = merge_keys_to_list(prev, cur)
@@ -141,12 +147,13 @@ class ListSystemDUnitsCommand(Command):
 			anomalies.append(D("systemd unit '%s' was '%s' with status '%s' and sub is '%s'" % (unit, cload, cstatus, csub)))
 		return anomalies
 
-class ListSystemDUnitFilesCommand(Command):
+class ListSystemDUnitFilesCommand(ShellCommand):
 	name = "systemd_unitfiles"
-	shell = False
 	command = "%s list-unit-files --all --full" % (SYSTEMCTL_BIN)
 	desc = "list all available systemd unit files"
+	supported = "linux"
 
+	@staticmethod
 	def parse(output):
 		res = {}
 		# hack as the header detection won't work otherwise in the
@@ -162,6 +169,7 @@ class ListSystemDUnitFilesCommand(Command):
 			res[e["unit_file"]] = e["state"]
 		return res
 
+	@staticmethod
 	def compare(prev, cur):
 		anomalies = []
 		units = merge_keys_to_list(prev, cur)
@@ -178,12 +186,13 @@ class ListSystemDUnitFilesCommand(Command):
 			anomalies.append(D("systemd unit file %s has status %s" % (unit, c)))
 		return anomalies
 
-class ListSystemDPropertiesCommand(Command):
+class ListSystemDPropertiesCommand(ShellCommand):
 	name = "systemd_props"
-	shell = False
 	command = "%s show --all --full" % (SYSTEMCTL_BIN)
 	desc = "show all systemd properties"
+	supported = "linux"
 
+	@staticmethod
 	def parse(output):
 		res = {}
 		lines = output.splitlines()
@@ -194,6 +203,7 @@ class ListSystemDPropertiesCommand(Command):
 			res[name] = value
 		return res
 
+	@staticmethod
 	def compare(prev, cur):
 		anomalies = []
 		properties = merge_keys_to_list(prev, cur)

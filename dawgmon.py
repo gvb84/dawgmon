@@ -5,9 +5,8 @@ from datetime import datetime
 from argparse import ArgumentParser
 
 import commands
-from utils import merge_keys_to_list, ts_to_str
+from utils import merge_keys_to_list, ts_to_str, get_osname
 from cache import Cache
-from local import local_run
 from version import VERSION
 
 def compare_output(old, new, commandlist=None, replace_timestamp=False, timestamps=(None, None)):
@@ -23,11 +22,12 @@ def compare_output(old, new, commandlist=None, replace_timestamp=False, timestam
 			continue
 		if commandlist and task_name not in commandlist:
 			continue
+		cmd = cmd()
 	
 		# cache contains (stdout, stderr) of the executed tasks
-		old_data = old[task_name][0] if task_name in old else ""
+		old_data = old[task_name]["res"][1] if task_name in old else ""
 		old_data = cmd.parse(old_data)
-		new_data = cmd.parse(new[task_name][0])
+		new_data = cmd.parse(new[task_name]["res"][1])
 		ret = cmd.compare(old_data, new_data)
 		if type(ret) != list:
 			raise Exception("unexpected return value type for %s" % cmd)
@@ -117,6 +117,7 @@ def run(tmpdirname):
 		if len(answer) != 1 or answer[0].lower() != 'y':
 			return
 
+	osname = get_osname()
 
 	# load last entry from cache
 	cache = Cache(args.cache_location)
@@ -148,6 +149,15 @@ def run(tmpdirname):
 		for cmd in commands.COMMANDS:
 				args.commandlist.append(cmd.name)
 
+	# check which commands we can actually run on this target system and if
+	# not remove them from the list
+	commandlist = []
+	for i, name in enumerate(args.commandlist):
+		cmd = commands.COMMAND_CACHE[name]()
+		if cmd.canrun(osname):
+			commandlist.append(cmd)
+		else:
+			print("Cannot run |%s|" % name)
 
 	# run the selected list of commands or get cached results
 	anomalies = []
@@ -155,18 +165,18 @@ def run(tmpdirname):
 		new = {}
 		lc = len(args.commandlist)
 		done = 0
-		cmd_runner = local_run(tmpdirname, args.commandlist)
-		for res in cmd_runner:
+		for cmd in commandlist:
 			# if we're running on a TTY we're in interactive mode
 			# so we try to show some updates regarding progress
 			if isatty:
-				print("%i/%i %s" % (done, lc, "[%s]".ljust(20) % (args.commandlist[done])), end="\r")
-			cmd_name, cmd_exec, retcode, cmd_stdout, cmd_stderr = res
+				print("%i/%i %s" % (done, lc, "[%s]".ljust(20) % (cmd.name)), end="\r")
+				sys.stdout.flush()
+			res = cmd.run()
 			done = done + 1
-			new[cmd_name] = (cmd_stdout, cmd_stderr)
-			if retcode == 0:
+			new[cmd.name] = res.serialize()
+			if res.succeeded():
 				continue
-			print("%s failed with non-zero exit status (%i)" % (cmd_name, retcode))
+			print("%s failed with non-zero exit status (%i)" % (cmd.name, retcode))
 
 			# we default back to always showing stderr output if
 			# we're not in interactive mode (which is f.e. the case

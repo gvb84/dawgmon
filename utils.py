@@ -1,4 +1,4 @@
-import os
+import os, subprocess
 from datetime import datetime
 
 DATE_PARSE_STR = "%Y-%m-%d %H:%M:%S.%f"
@@ -17,3 +17,21 @@ def ts_to_str(timestamp, subsecs=True):
 # string is assumed to only contain maximum second precision
 def str_to_ts(s, subsecs=True):
 	return None if not s else datetime.strptime(s, DATE_PARSE_STR if subsecs else DATE_PARSE_STR[:-3])
+
+def get_osname():
+	# might change this to an actual ShellCommand in the new structure
+	# such that we do a proper find for where this binary might be
+	# located XXX or move that stuff to here
+	p = subprocess.Popen(["uname", "-s"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+	stdout, stderr = p.communicate()
+	# XXX we should probably try and get the system encoding for
+	# this instead of defaulting to UTF-8.
+	stdout = stdout.decode("utf-8")
+	stderr = stderr.decode("utf-8")
+	retcode = p.returncode
+	if retcode != 0:
+		raise Exception("cannot get OS name (uname -s failed)")
+	lines = stdout.splitlines()
+	if len(lines) != 1 or len(lines[0]) == 0:
+		raise Exception("uname -s returned invalid and unexpected output")
+	return lines[0].lower()

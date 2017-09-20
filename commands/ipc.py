@@ -13,15 +13,16 @@ def parse_ipcs_output(output):
 		res[int(parts[1])] = (key, owner, perms, int(size))
 	return res
 
-class ListSharedMemorySegmentsCommand(Command):
+class ListSharedMemorySegmentsCommand(ShellCommand):
 	name = "list_shm"
-	shell = False
 	command = "ipcs -m"
 	desc = "analyze changes in System V shared memory segments"
 
+	@staticmethod
 	def parse(output):
 		return parse_ipcs_output(output)
 
+	@staticmethod
 	def compare(prev, cur):
 		anomalies = []
 		segments = merge_keys_to_list(prev, cur)
@@ -46,15 +47,16 @@ class ListSharedMemorySegmentsCommand(Command):
 			anomalies.append(D("shared memory segment %i (key=0x%x, owner=%s, permissions=%s and size=%i) unchanged" % (shmid, p[0], p[1], p[2], p[3])))
 		return anomalies
 
-class ListSemaphoreArraysCommand(Command):
+class ListSemaphoreArraysCommand(ShellCommand):
 	name = "list_sem"
-	shell = False
 	command = "ipcs -s"
 	desc = "analyze changes in System V sempahores"
 
+	@staticmethod
 	def parse(output):
 		return parse_ipcs_output(output)
 
+	@staticmethod
 	def compare(prev, cur):
 		anomalies = []
 		semaphores = merge_keys_to_list(prev, cur)
@@ -79,15 +81,16 @@ class ListSemaphoreArraysCommand(Command):
 			anomalies.append(D("semaphore array %i (key=0x%x, owner=%s, permissions=%s, nsems=%i) unchanged" % (sem, p[0], p[1], p[2], p[3])))
 		return anomalies
 
-class ListMessageQueuesCommand(Command):
+class ListMessageQueuesCommand(ShellCommand):
 	name = "list_msq"
-	shell = False
 	command = "ipcs -q"
 	desc = "analyze changes in System V message queues"
 
+	@staticmethod
 	def parse(output):
 		return parse_ipcs_output(output)
 
+	@staticmethod
 	def compare(prev, cur):
 		anomalies = []
 		queues = merge_keys_to_list(prev, cur)
@@ -112,12 +115,13 @@ class ListMessageQueuesCommand(Command):
 			anomalies.append(D("message queue %i (key=0x%x, owner=%s, permissions=%s, used-bytes=%i) unchanged" % (q, p[0], p[1], p[2], p[3])))
 		return anomalies
 
-class ListListeningUNIXSocketsCommand(Command):
+class ListListeningUNIXSocketsCommand(ShellCommand):
 	name = "list_unix_ports"
-	shell = False
 	command = "netstat -lx"
 	desc = "list changes in listening UNIX ports"
+	supported = "linux"
 
+	@staticmethod
 	def parse(output):
 		res = {}
 		output = output.splitlines()[2:]
@@ -132,6 +136,7 @@ class ListListeningUNIXSocketsCommand(Command):
 			res[sock_name] = (i_node, sock_type)
 		return res
 
+	@staticmethod
 	def compare(prev, cur):
 		anomalies = []
 		sockets = merge_keys_to_list(prev, cur)

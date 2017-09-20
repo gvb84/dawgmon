@@ -10,8 +10,7 @@ DATE_PARSE_STR = "%Y-%m-%d %H:%M:%S.%f %z"
 # what a system administrator might do by hand when comparing directory
 # listings via something like ls -lha etc.
 
-class CheckFilesInDirectoryCommand(Command):
-	shell = True
+class CheckFilesInDirectoryCommand(ShellCommand):
 	needs_subclass = True
 
 	# command option --full-time is GNU file utils specific
@@ -19,6 +18,7 @@ class CheckFilesInDirectoryCommand(Command):
 	# two arguments should be start directory and file type (pipe, symlink, regular file etc)
 	command = "find %s -xdev -ignore_readdir_race -type %s -exec ls --full-time -lba \{\} \;"
 
+	@staticmethod
 	def parse(output):
 		res = {}
 		lines = output.splitlines()
@@ -54,6 +54,7 @@ class CheckFilesInDirectoryCommand(Command):
 			res[fn] = (user.decode("utf-8"), group.decode("utf-8"), size, dt, perm.decode("utf-8"), symlink)
 		return res
 
+	@staticmethod
 	def compare(prev, cur, desc="file"):
 		# the description parameter is a somewhat dirty hack to make
 		# this more descriptive by changing the language for all the
@@ -111,6 +112,7 @@ class CheckForPipesCommand(CheckFilesInDirectoryCommand):
 	desc = "lists named pipes"
 	command = CheckFilesInDirectoryCommand.command % (directory, "p")
 
+	@staticmethod
 	def compare(prev, cur):
 		return CheckFilesInDirectoryCommand.compare(prev, cur, "pipe")
 
@@ -120,5 +122,6 @@ class FindSuidBinariesCommand(CheckFilesInDirectoryCommand):
 	desc = "lists setuid/setgid executables"
 	command = "find / -xdev -ignore_readdir_race -type f \( -perm -4000 -o -perm -2000 \) -exec ls --full-time -lba \{\} \;"
 
+	@staticmethod
 	def compare(prev, cur):
 		return CheckFilesInDirectoryCommand.compare(prev, cur, "suid binary")
