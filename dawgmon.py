@@ -27,11 +27,10 @@ def compare_output(old, new, commandlist=None, replace_timestamp=False, timestam
 		if task_name not in old:
 			anomalies.append(commands.W("cannot find %s so cannot compare" % task_name))
 
-			# the parse routine for the command should return a valid object
-			# for comparision even when an empty string is supplied. this might
-			# not be the cleanest; maybe it should be None? XXX
-			print(task_name)
-			print(cmd)
+			# the parse routine for the command should return a
+			# valid object for comparision even when no argument is
+			# supplied (as that generally means there was nothing
+			# in the cache for this command on a previous run)
 			old_data = cmd.parse()
 		else:
 			old_data = cmd.deserialize_result(old[task_name])
