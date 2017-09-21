@@ -32,6 +32,17 @@ class ShellCommandResult(CommandResult):
 	def serialize(self):
 		return {"cmd":self.cmd.name,"res":(self.retcode, self.stdout, self.stderr)}
 
+	@staticmethod
+	def deserialize(cmd, data):
+		if not isinstance(cmd, ShellCommand):
+			return None
+		if type(data) != dict:
+			return None
+		cmd_name = data["cmd"] if "cmd" in data else None
+		if not cmd_name or cmd_name != cmd.name:
+			return None
+		return ShellCommandResult(cmd, *data["res"])
+
 	def succeeded(self):
 		return self.retcode == 0
 
@@ -58,6 +69,10 @@ class Command:
 
 	@classmethod
 	def canrun(cls, ostype=None):
+		raise Exception("not implemented for %s" % str(cls))
+
+	@classmethod
+	def deserialize_result(cls, data=None):
 		raise Exception("not implemented for %s" % str(cls))
 	
 class ShellCommand(Command):
@@ -113,6 +128,9 @@ class ShellCommand(Command):
 			return False
 		self._binary = binaries[0]
 		return True
+
+	def deserialize_result(self, data):
+		return ShellCommandResult.deserialize(self, data)
 
 class PythonCommand(Command):
 

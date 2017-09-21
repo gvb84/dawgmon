@@ -24,10 +24,25 @@ def compare_output(old, new, commandlist=None, replace_timestamp=False, timestam
 			continue
 		cmd = cmd()
 	
-		# cache contains (stdout, stderr) of the executed tasks
-		old_data = old[task_name]["res"][1] if task_name in old else ""
-		old_data = cmd.parse(old_data)
-		new_data = cmd.parse(new[task_name]["res"][1])
+		if task_name not in old:
+			anomalies.append(commands.W("cannot find %s so cannot compare" % task_name))
+
+			# the parse routine for the command should return a valid object
+			# for comparision even when an empty string is supplied. this might
+			# not be the cleanest; maybe it should be None? XXX
+			old_data = cmd.parse("")
+		else:
+			old_data = cmd.deserialize_result(old[task_name])
+			if not old_data:
+				anomalies.append(commands.W("error while deserializing old data for %s" %  task_name))
+				continue
+			# cache contains (stdout, stderr) of the executed tasks
+			old_data = old_data.parse()
+		new_data = cmd.deserialize_result(new[task_name])
+		if not new_data:
+			anomalies.append(commands.W("error while deserializing new data for %s" %  task_name))
+			continue
+		new_data = new_data.parse()
 		ret = cmd.compare(old_data, new_data)
 		if type(ret) != list:
 			raise Exception("unexpected return value type for %s" % cmd)
