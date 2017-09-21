@@ -1,0 +1,4 @@
+1.1
+- rewrote command infrastructure to make it more extensible for the future
+- send None to signal "no previous cache entry found" at a command.
+- miscellaneous bugfixes
