@@ -52,8 +52,10 @@ class ListSystemDSocketsCommand(ShellCommand):
 	supported = "linux"
 
 	@staticmethod
-	def parse(output):
+	def parse(output=None):
 		res = {}
+		if not output:
+			return res
 		entries = parse_systemd_output_table(output)
 		for e in entries:
 			res[e["listen"]] = (e["unit"], e["activates"])
@@ -83,8 +85,10 @@ class ListSystemDTimersCommand(ShellCommand):
 	supported = "linux"
 
 	@staticmethod
-	def parse(output):
+	def parse(output=None):
 		res = {}
+		if not output:
+			return res
 		entries = parse_systemd_output_table(output)
 		for e in entries:
 			res[e["unit"]] = (e["activates"], e["last"], e["next"], e["left"], e["passed"])
@@ -113,8 +117,10 @@ class ListSystemDUnitsCommand(ShellCommand):
 	supported = "linux"
 
 	@staticmethod
-	def parse(output):
+	def parse(output=None):
 		res = {}
+		if not output:
+			return res
 		entries = parse_systemd_output_table(output)
 		for e in entries:
 			res[e["unit"]] = (e["active"], e["load"], e["sub"], e["description"])
@@ -154,8 +160,10 @@ class ListSystemDUnitFilesCommand(ShellCommand):
 	supported = "linux"
 
 	@staticmethod
-	def parse(output):
+	def parse(output=None):
 		res = {}
+		if not output:
+			return res
 		# hack as the header detection won't work otherwise in the
 		# utility function used below because there's a space
 		# in the first header 'UNIT FILE'
@@ -193,8 +201,10 @@ class ListSystemDPropertiesCommand(ShellCommand):
 	supported = "linux"
 
 	@staticmethod
-	def parse(output):
+	def parse(output=None):
 		res = {}
+		if not output:
+			return res
 		lines = output.splitlines()
 		for line in lines:
 			lf = line.find("=")

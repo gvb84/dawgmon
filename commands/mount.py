@@ -15,11 +15,13 @@ class MountpointsCommand(ShellCommand):
 	desc = "analyze changes in file system mounts"
 
 	@staticmethod
-	def parse(output):
+	def parse(output=None):
+		res = {}
+		if not output:
+			return res
 		lines = output.splitlines()
 		if len(lines) == 0:
-			return {}
-		ret = {}
+			return res
 		for line in lines:
 			lf = line.find("on")
 			device = line[:lf].strip()
@@ -31,8 +33,8 @@ class MountpointsCommand(ShellCommand):
 			mtype = line[:lf].strip()
 			# strip off final ')'
 			attrs = [a.strip() for a in line[lf+1:-1].split(",")]
-			ret[point] = (device, mtype, attrs)
-		return ret
+			res[point] = (device, mtype, attrs)
+		return res
 
 	@staticmethod
 	def compare(prev, cur):

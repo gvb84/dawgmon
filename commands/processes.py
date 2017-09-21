@@ -6,8 +6,10 @@ class CheckProcessessCommand(ShellCommand):
 	desc = "monitors changes in the running processes (mostly for debugging)"
 
 	@staticmethod
-	def parse(output):
+	def parse(output=None):
 		res = {}
+		if not output:
+			return res
 		lines = output.splitlines()
 		# ignore the first header line of the output
 		for line in lines[1:]:

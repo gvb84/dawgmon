@@ -2,6 +2,8 @@ from . import *
 
 def parse_ipcs_output(output):
 	res = {}
+	if not output:
+		return res
 	lines = output.splitlines()
 	for line in lines:
 		parts = line.split()
@@ -19,7 +21,7 @@ class ListSharedMemorySegmentsCommand(ShellCommand):
 	desc = "analyze changes in System V shared memory segments"
 
 	@staticmethod
-	def parse(output):
+	def parse(output=None):
 		return parse_ipcs_output(output)
 
 	@staticmethod
@@ -53,7 +55,7 @@ class ListSemaphoreArraysCommand(ShellCommand):
 	desc = "analyze changes in System V sempahores"
 
 	@staticmethod
-	def parse(output):
+	def parse(output=None):
 		return parse_ipcs_output(output)
 
 	@staticmethod
@@ -87,7 +89,7 @@ class ListMessageQueuesCommand(ShellCommand):
 	desc = "analyze changes in System V message queues"
 
 	@staticmethod
-	def parse(output):
+	def parse(output=None):
 		return parse_ipcs_output(output)
 
 	@staticmethod
@@ -122,8 +124,10 @@ class ListListeningUNIXSocketsCommand(ShellCommand):
 	supported = "linux"
 
 	@staticmethod
-	def parse(output):
+	def parse(output=None):
 		res = {}
+		if not output:
+			return res
 		output = output.splitlines()[2:]
 		for line in output:
 			parts = line.split()[-4:]

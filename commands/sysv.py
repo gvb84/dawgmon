@@ -7,8 +7,10 @@ class ListSystemVInitJobsCommand(ShellCommand):
 	supported = "linux"
 
 	@staticmethod
-	def parse(output):
+	def parse(output=None):
 		res = {}
+		if not output:
+			return res
 		lines = output.splitlines()
 		for line in lines:
 			parts = line.split()

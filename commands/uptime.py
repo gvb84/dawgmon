@@ -9,7 +9,7 @@ class UptimeCommand(ShellCommand):
 	desc = "show uptime and check if reboot happened"
 
 	@staticmethod
-	def parse(output):
+	def parse(output=None):
 		if not output:
 			return None 
 		try:

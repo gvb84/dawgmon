@@ -7,8 +7,10 @@ class ListeningTCPUDPPortsCommand(ShellCommand):
 	supported = "linux"
 
 	@staticmethod
-	def parse(data):
+	def parse(data=None):
 		res = {}
+		if not data:
+			return res
 		lines = data.splitlines()[2:]
 		for line in lines:
 			proto, addr = line.split()[0:4:3]

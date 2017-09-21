@@ -6,7 +6,9 @@ class KernelVersionCommand(ShellCommand):
 	desc = "analyze changes in kernel version"
 
 	@staticmethod
-	def parse(output):
+	def parse(output=None):
+		if not output:
+			return None
 		lines = output.splitlines()
 		if len(lines) != 2:
 			return None
@@ -60,11 +62,13 @@ class LSBVersionCommand(ShellCommand):
 	supported = "linux"
 
 	@staticmethod
-	def parse(output):
+	def parse(output=None):
+		ret = {}
+		if not output:
+			return ret
 		lines = output.splitlines()
 		if len(lines) != 4:
 			return {}
-		ret = {}
 		for line in lines:
 			lf = line.strip().find(":")
 			prop = line[0:lf].strip()

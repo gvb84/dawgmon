@@ -7,8 +7,10 @@ class ListListeningTCPUDPPortsCommand(ShellCommand):
 	supported = "linux"
 
 	@staticmethod
-	def parse(output):
+	def parse(output=None):
 		res = {}
+		if not output:
+			return res
 		output = output.splitlines()[2:]
 		for line in output:
 			proto, addr = line.split()[0:4:3]
@@ -45,8 +47,10 @@ class ListNetworkInterfacesCommand(ShellCommand):
 	supported = "linux"
 
 	@staticmethod
-	def parse(output):
+	def parse(output=None):
 		res = {}
+		if not output:
+			return res
 		linecount = 0
 		lines = output.splitlines()
 		if len(lines) == 0:

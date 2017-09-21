@@ -43,8 +43,10 @@ class ListInstalledPackagesCommand(ShellCommand):
 	supported = "linux"
 
 	@staticmethod
-	def parse(output):
+	def parse(output=None):
 		res = {}
+		if not output:
+			return res
 		lines = output.splitlines()
 		header_done = False
 		for line in lines:

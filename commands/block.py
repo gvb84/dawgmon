@@ -7,11 +7,13 @@ class ListBlockDevicesCommand(ShellCommand):
 	supported = "linux"
 
 	@staticmethod
-	def parse(output):
+	def parse(output=None):
+		ret = {}
+		if not output:
+			return ret
 		lines = output.splitlines()
 		if len(lines) == 0:
-			return {}
-		ret = {}
+			return ret
 		header = lines[0]
 		lines = lines[1:]
 		for line in lines:

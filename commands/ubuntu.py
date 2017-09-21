@@ -7,7 +7,9 @@ class IsRestartRequiredCommand(ShellCommand):
 	supported = "linux"
 
 	@staticmethod
-	def parse(output):
+	def parse(output=None):
+		if not output:
+			return ""
 		return output
 
 	@staticmethod
