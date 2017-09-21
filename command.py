@@ -56,7 +56,7 @@ class PythonCommandResult:
 class Command:
 
 	@classmethod
-	def parse(cls, data):
+	def parse(cls):
 		raise Exception("not implemented for %s" % str(cls))
 
 	@classmethod

@@ -30,7 +30,9 @@ def compare_output(old, new, commandlist=None, replace_timestamp=False, timestam
 			# the parse routine for the command should return a valid object
 			# for comparision even when an empty string is supplied. this might
 			# not be the cleanest; maybe it should be None? XXX
-			old_data = cmd.parse("")
+			print(task_name)
+			print(cmd)
+			old_data = cmd.parse()
 		else:
 			old_data = cmd.deserialize_result(old[task_name])
 			if not old_data:

@@ -19,8 +19,10 @@ class CheckFilesInDirectoryCommand(ShellCommand):
 	command = "find %s -xdev -ignore_readdir_race -type %s -exec ls --full-time -lba \{\} \;"
 
 	@staticmethod
-	def parse(output):
+	def parse(output=None):
 		res = {}
+		if not output:
+			return res
 		lines = output.splitlines()
 		for line in lines:
 			line = bytes(line, "utf-8")

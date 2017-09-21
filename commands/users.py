@@ -21,9 +21,11 @@ class CheckGroupsCommand(ShellCommand):
 	desc = "analyze UNIX group changes"
 
 	@staticmethod
-	def parse(data):
-		data = data.splitlines()
+	def parse(data=None):
 		res = {}
+		if not data:
+			return res
+		data = data.splitlines()
 		for line in data:
 			parts = line.split(":")
 			users = parts[3].split(",")
@@ -81,9 +83,11 @@ class CheckUsersCommand(ShellCommand):
 	desc = "analyze UNIX user changes"
 
 	@staticmethod
-	def parse(data):
-		data = data.splitlines()
+	def parse(data=None):
 		res = {}
+		if not data:
+			return res
+		data = data.splitlines()
 		for line in data:
 			parts = line.split(":")
 			login = parts[0]

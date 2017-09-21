@@ -6,7 +6,9 @@ class EnvironmentVariablesCommand(ShellCommand):
 	desc = "monitor changes in environment variables"
 
 	@staticmethod
-	def parse(output):
+	def parse(output=None):
+		if not output:
+			return {}
 		lines = output.splitlines()
 		if len(lines) == 0:
 			return {}
