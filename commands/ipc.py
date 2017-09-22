@@ -19,6 +19,7 @@ class ListSharedMemorySegmentsCommand(ShellCommand):
 	name = "list_shm"
 	command = "ipcs -m"
 	desc = "analyze changes in System V shared memory segments"
+	supported = "linux"
 
 	@staticmethod
 	def parse(output=None):
@@ -53,6 +54,7 @@ class ListSemaphoreArraysCommand(ShellCommand):
 	name = "list_sem"
 	command = "ipcs -s"
 	desc = "analyze changes in System V sempahores"
+	supported = "linux"
 
 	@staticmethod
 	def parse(output=None):
@@ -87,6 +89,7 @@ class ListMessageQueuesCommand(ShellCommand):
 	name = "list_msq"
 	command = "ipcs -q"
 	desc = "analyze changes in System V message queues"
+	supported = "linux"
 
 	@staticmethod
 	def parse(output=None):

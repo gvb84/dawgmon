@@ -19,6 +19,7 @@ class CheckGroupsCommand(ShellCommand):
 	name = "check_groups"
 	command = "cat /etc/group"
 	desc = "analyze UNIX group changes"
+	supported = ["linux", "freebsd"]
 
 	@staticmethod
 	def parse(data=None):
@@ -28,6 +29,8 @@ class CheckGroupsCommand(ShellCommand):
 		data = data.splitlines()
 		for line in data:
 			parts = line.split(":")
+			if len(parts) > 0 and len(parts[0]) > 0 and parts[0].startswith("#"):
+                                continue
 			users = parts[3].split(",")
 			if len(users[0]) == 0:
 				users = []
@@ -81,6 +84,7 @@ class CheckUsersCommand(ShellCommand):
 	name = "check_users"
 	command = "cat /etc/passwd"
 	desc = "analyze UNIX user changes"
+	supported = ["linux", "freebsd"]
 
 	@staticmethod
 	def parse(data=None):
@@ -90,6 +94,8 @@ class CheckUsersCommand(ShellCommand):
 		data = data.splitlines()
 		for line in data:
 			parts = line.split(":")
+			if len(parts) > 0 and len(parts[0]) > 0 and parts[0].startswith("#"):
+			    continue
 			login = parts[0]
 			uid, gid = int(parts[2]), int(parts[3])
 			homedir, shell = parts[5].strip(), parts[6].strip()
