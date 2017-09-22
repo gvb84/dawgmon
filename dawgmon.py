@@ -192,7 +192,7 @@ def run(tmpdirname):
 			new[cmd.name] = res.serialize()
 			if res.succeeded():
 				continue
-			print("%s failed with non-zero exit status (%i)" % (cmd.name, retcode))
+			print("%s failed with non-zero exit status" % (cmd.name))
 
 			# we default back to always showing stderr output if
 			# we're not in interactive mode (which is f.e. the case
