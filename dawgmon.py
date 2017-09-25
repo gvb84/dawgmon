@@ -192,17 +192,16 @@ def run(tmpdirname):
 			new[cmd.name] = res.serialize()
 			if res.succeeded():
 				continue
-			print("%s failed with non-zero exit status" % (cmd.name))
+			print("%s failed" % (cmd.name))
 
 			# we default back to always showing stderr output if
 			# we're not in interactive mode (which is f.e. the case
 			# if we get run from a cronjob with the output piped to
 			# a file for email purposes)
 			if isatty and not args.show_debug:
-				print("run again with debug (-d) turned on to see stderr output")
+				print("run again with debug (-d) turned on to see error output")
 				return
-			print("\n%s\n" % cmd_exec)
-			print(cmd_stderr)
+			print(res.error())
 			return
 
 		# add new entry to cache if needed but only if a full command list is being executed

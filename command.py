@@ -16,6 +16,10 @@ class CommandResult:
 	def succeeded(cls):
 		raise Exception("not implemented for %s" % str(cls))
 
+	@classmethod
+	def error(cls):
+		raise Exception("not implemented for %s" % str(cls))
+
 class ShellCommandResult(CommandResult):
 	def __init__(self, cmd, retcode, stdout, stderr):
 		super(ShellCommandResult, self).__init__()
@@ -45,6 +49,13 @@ class ShellCommandResult(CommandResult):
 
 	def succeeded(self):
 		return self.retcode == 0
+
+	def error(self):
+		if self.succeeded():
+			return ""
+		# should use the rewritten command (after the whereis run) for nicer output
+		# instead of the one in the code which is self.cmd.command
+		return "\n%s\n%s\n" % (self.cmd.command, self.stderr)
 
 class PythonCommandResult:
 	def __init__(self):
