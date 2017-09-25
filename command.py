@@ -1,4 +1,5 @@
-import shlex, subprocess
+import shlex
+from utils import run_command
 
 class CommandResult:
 
@@ -88,17 +89,6 @@ class Command:
 	
 class ShellCommand(Command):
 
-	def _runProcess(self, cmd):
-		p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-		stdout, stderr = p.communicate()
-
-		# XXX we should probably try and get the system encoding for
-		# this instead of defaulting to UTF-8.
-		stdout = stdout.decode("utf-8")
-		stderr = stderr.decode("utf-8")
-		retcode = p.returncode
-		return (retcode, stdout, stderr)
-
 	def run(self):
 		cmd = shlex.split(self.command)
 
@@ -109,7 +99,7 @@ class ShellCommand(Command):
 		if hasattr(self, "_binary"):
 			cmd[0] = self._binary
 
-		ret = self._runProcess(cmd)
+		ret = run_command(cmd)
 		return ShellCommandResult(self, *ret)
 
 	def canrun(self, ostype=None):
@@ -128,7 +118,7 @@ class ShellCommand(Command):
 		# filename returned by 'whereis' and ached in self._binary
 		binary, *parts = shlex.split(self.command)
 		cmd = shlex.split("whereis -b %s" % binary)
-		retcode, stdout, stderr = self._runProcess(cmd)
+		retcode, stdout, stderr = run_command(cmd)
 		if retcode != 0 or stdout.find(binary) != 0:
 			return False
 		stdout = stdout[len(binary):]
